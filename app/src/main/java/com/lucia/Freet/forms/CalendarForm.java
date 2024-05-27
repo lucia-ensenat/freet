@@ -1,20 +1,27 @@
 package com.lucia.Freet.forms;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.lucia.Freet.Home;
+import com.lucia.Freet.Profile;
 import com.lucia.Freet.R;
 
 import java.util.UUID;
 
 public class CalendarForm extends AppCompatActivity {
     private EditText nameEditText;
+    private BottomNavigationView navigationView;
     private Switch share;
 
     @Override
@@ -37,6 +44,26 @@ public class CalendarForm extends AppCompatActivity {
                 }
 
 
+            }
+        });
+
+        navigationView =  findViewById(R.id.bottom_navigation);
+        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intent = null;
+                int itemId = item.getItemId();
+                if (itemId == R.id.algorithm) {
+                    intent = new Intent(getApplicationContext(), Home.class);
+                    startActivity(intent);
+                } else if (itemId == R.id.course) {
+                    intent = new Intent(getApplicationContext(), EventForm.class);
+                    startActivity(intent);
+                } else if (itemId == R.id.profile) {
+                    intent = new Intent(getApplicationContext(), Profile.class);
+                    startActivity(intent);
+                }
+                return false;
             }
         });
 
