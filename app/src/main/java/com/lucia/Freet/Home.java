@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -41,6 +40,7 @@ public class Home extends AppCompatActivity {
         setContentView(R.layout.activity_principal);
         connectionService = new ConnectionService();
 
+        listaEventos = findViewById(R.id.listaEventos);
         navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -57,20 +57,10 @@ public class Home extends AppCompatActivity {
                 return false;
             }
         });
-
-
-        LoginTask task = new LoginTask();
-        task.execute();
-//        listaEventos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//            }
-//        });
-
+        EventsTask eventsTask = new EventsTask();
+        eventsTask.execute();
 
     }
-
 
     private class AdaptadorEvento extends ArrayAdapter<Event> {
         private ArrayList<Event> events;
@@ -100,26 +90,28 @@ public class Home extends AppCompatActivity {
         }
     }
 
-    private class LoginTask extends AsyncTask<String, Void, Boolean> {
+
+    private class EventsTask extends AsyncTask<String, Void, Boolean> {
 
 
         @Override
         protected Boolean doInBackground(String... params) {
             final Calendar calendar = Calendar.getInstance();
 
-//todo
             try (final Connection connection = connectionService.createConnection(); //
-                 final PreparedStatement statement = connection.prepareStatement("SELECT * FROM evento WHERE YEAR(fecha) = ?  AND MONTH(fecha) = ? ")) {
+                 final PreparedStatement statement = connection.prepareStatement("SELECT * FROM evento WHERE YEAR(fecha) = ?  AND MONTH(fecha) = ?")) {
                 statement.setInt(1, calendar.get(Calendar.YEAR));
-                statement.setInt(2, calendar.get(Calendar.MONTH));
-
+                statement.setInt(2, calendar.get(Calendar.MONTH) + 1);
+                ;
                 try (final ResultSet rs = statement.executeQuery()) {
                     while (rs.next()) {
-                        final Event event = new Event(rs.getString("nombre"), rs.getString("lugar"), rs.getTimestamp("fecha"),
+                        final Event event = new Event(rs.getString("evento"), rs.getString("lugar"), rs.getTimestamp("fecha"),
                                 rs.getTimestamp("fechaFin"));
+
                         events.add(event);
 
                     }
+
                     return true;
                 }
             } catch (SQLException e) {
@@ -131,10 +123,13 @@ public class Home extends AppCompatActivity {
         protected void onPostExecute(Boolean success) {
             if (success) {
                 final AdaptadorEvento adapter = new AdaptadorEvento(getApplicationContext(), (ArrayList<Event>) events);
-                listaEventos = findViewById(R.id.listaEventos);
+
                 listaEventos.setAdapter(adapter);
+            } else {
+                System.out.println("No se encontraron eventos.");
             }
         }
     }
-
 }
+
+
