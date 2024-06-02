@@ -159,12 +159,10 @@ public class EventForm extends AppCompatActivity {
 
             Calendar selectedCalendar = (Calendar) calendars.getSelectedItem();
             try (final Connection connection = connectionService.createConnection()) {
-                connection.setAutoCommit(false);
-                try (final PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `evento`(`fecha`, `fechaFin`, `evento`, `lugar`, `idCalendario`) VALUES (?,?,?,?,?)");//
-              final PreparedStatement obtainID = connection.prepareStatement("SELECT id FROM `evento` WHERE `fecha` = ? and `fechaFin` = ? AND `evento` = ? and `lugar` = ? and `idCalendario` = ?");//
-              final PreparedStatement obtainCalendarUsers = connection.prepareStatement("SELECT nickname FROM `tiene` WHERE `idCalendario` = ? ");//
-                     final PreparedStatement insertToCalendar = connection.prepareStatement("INSET INTO asiste (`idEvento`,`nickname`) VALUES (?,?)")) {
 
+                try (final PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `evento`(`fecha`, `fechaFin`, `evento`, `lugar`, `idCalendario`) VALUES (?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);//
+              final PreparedStatement obtainCalendarUsers = connection.prepareStatement("SELECT nickname FROM `tiene` WHERE `idCalendario` = ? ");//
+                     final PreparedStatement insertToCalendar = connection.prepareStatement("INSERT INTO asiste (`idEvento`,`nickname`) VALUES (?,?)")) {
 
                     java.sql.Date sqlStartDate = new java.sql.Date(startTimeStamp.getTimeInMillis());
                     java.sql.Date sqlEndDate = new java.sql.Date(endTimeStamp.getTimeInMillis());
@@ -176,34 +174,28 @@ public class EventForm extends AppCompatActivity {
                     preparedStatement.setString(5, selectedCalendar.getUUID());
                     preparedStatement.executeUpdate();
 
-
-                    obtainID.setDate(1, sqlStartDate);
-                    obtainID.setDate(2, sqlEndDate);
-                    obtainID.setString(3, eventName.getText().toString());
-                    obtainID.setString(4, eventPlace.getText().toString());
-                    obtainID.setString(5, selectedCalendar.getUUID());
-
-                     try(final ResultSet rs = obtainID.executeQuery()) {
-                         String idEvento = rs.getString("idEvento");
-
-
-                         obtainCalendarUsers.setString(1, selectedCalendar.getUUID());
-                         try (final ResultSet rsCalendar = obtainCalendarUsers.executeQuery()) {
-                             while (rsCalendar.next()) {
-                                 insertToCalendar.setString(1, idEvento);
-                                 insertToCalendar.setString(2, rs.getString("nickname"));
-                                 insertToCalendar.executeUpdate();
-
-                             }
-
-                         }
-
-                     }
+                    ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                    if (generatedKeys.next()) {
+                        int eventoId = generatedKeys.getInt(1);
 
 
 
-                    connection.commit();
-                }
+                           obtainCalendarUsers.setString(1, selectedCalendar.getUUID());
+                           try (final ResultSet rsCalendar = obtainCalendarUsers.executeQuery()) {
+                               while (rsCalendar.next()) {
+                                   insertToCalendar.setInt(1, eventoId);
+                                   insertToCalendar.setString(2, rsCalendar.getString("nickname"));
+                                   insertToCalendar.executeUpdate();
+
+                               }
+
+                           }
+
+                       }
+                   }
+
+
+
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
