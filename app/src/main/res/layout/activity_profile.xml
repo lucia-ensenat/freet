@@ -9,76 +9,74 @@
     <TextView
         android:id="@+id/emailText"
         android:layout_width="0dp"
-        android:layout_height="93dp"
-        android:layout_marginTop="57dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="Email" />
 
     <TextView
         android:id="@+id/nicknameText"
         android:layout_width="0dp"
-        android:layout_height="111dp"
-        android:layout_marginTop="106dp"
-        android:layout_marginBottom="109dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonHistoric"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/emailText" />
+        app:layout_constraintTop_toBottomOf="@id/emailText"
+        android:text="Nickname" />
 
     <Button
         android:id="@+id/passwordButton"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="67dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginEnd="256dp"
-        android:text="CAMBIAR CONSTRASEÑA"
+        android:layout_marginTop="16dp"
+        android:text="CAMBIAR CONTRASEÑA"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.023"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nicknameText" />
+        app:layout_constraintTop_toBottomOf="@id/nicknameText" />
 
     <Button
         android:id="@+id/buttonCalendar"
-        android:layout_width="144dp"
-        android:layout_height="72dp"
-        android:layout_marginTop="108dp"
-        android:layout_marginEnd="44dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="CALENDARIO"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nicknameText" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/passwordButton" />
 
     <Button
         android:id="@+id/buttonHistoric"
-        android:layout_width="142dp"
-        android:layout_height="70dp"
-        android:layout_marginStart="64dp"
-        android:layout_marginTop="384dp"
-        android:layout_marginEnd="3dp"
-        android:text="HISTORICO"
-        app:layout_constraintEnd_toEndOf="@+id/passwordButton"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="HISTÓRICO"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/buttonCalendar" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="1dp"
+        android:layout_marginTop="16dp"
         android:background="@color/blue"
         app:itemIconTint="@android:color/white"
         app:itemTextColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordButton"
-        app:layout_constraintVertical_bias="0.995"
         app:menu="@menu/navigation_menu" />
 
+    <ListView
+        android:id="@+id/eventsListView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/buttonHistoric" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

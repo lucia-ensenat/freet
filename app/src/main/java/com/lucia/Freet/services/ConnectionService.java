@@ -10,8 +10,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class ConnectionService {
+    private Connection connection;
 
-   public Connection createConnection(){
+   public ConnectionService(){
 
        final String class_jdbc = "com.mysql.jdbc.Driver";
 
@@ -22,7 +23,7 @@ public class ConnectionService {
        Connection conn = null;
        try {
            Class.forName(class_jdbc);
-           conn = DriverManager.getConnection("jdbc:mysql://192.168.0.17:3306/freet2","root", "");
+           connection = DriverManager.getConnection("jdbc:mysql://192.168.0.17:3306/freet2","root", "");
        } catch (SQLException e) {
            throw new RuntimeException("No se ha podido crear la conexión a la base de datos", e);
        } catch (ClassNotFoundException e) {
@@ -30,7 +31,10 @@ public class ConnectionService {
        } catch (Exception e) {
            throw new RuntimeException("No se ha podido crear la conexión a la base de datos", e);
        }
-       return conn;
+
+   }
+   public Connection createConnection(){
+       return connection;
    }
 
 

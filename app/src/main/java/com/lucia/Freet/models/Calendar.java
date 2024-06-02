@@ -21,5 +21,8 @@ public class Calendar {
         return uuid;
     }
 
-
+    @Override
+    public String toString() {
+        return "" + nombre + "";
+    }
 }

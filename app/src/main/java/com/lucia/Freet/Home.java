@@ -104,17 +104,19 @@ public class Home extends AppCompatActivity {
                 statement.setInt(2, calendar.get(Calendar.MONTH) + 1);
                 ;
                 try (final ResultSet rs = statement.executeQuery()) {
+                    System.out.println("result set 1 guay");
                     while (rs.next()) {
                         final Event event = new Event(rs.getString("evento"), rs.getString("lugar"), rs.getTimestamp("fecha"),
                                 rs.getTimestamp("fechaFin"));
-
+                        System.out.println(event);
                         events.add(event);
 
                     }
-
+                    System.out.println(events);
                     return true;
                 }
             } catch (SQLException e) {
+                e.printStackTrace();
                 return false;
             }
         }
@@ -125,6 +127,7 @@ public class Home extends AppCompatActivity {
                 final AdaptadorEvento adapter = new AdaptadorEvento(getApplicationContext(), (ArrayList<Event>) events);
 
                 listaEventos.setAdapter(adapter);
+                System.out.println("listo");
             } else {
                 System.out.println("No se encontraron eventos.");
             }
