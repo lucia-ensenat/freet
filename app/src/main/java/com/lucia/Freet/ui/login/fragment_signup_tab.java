@@ -1,4 +1,4 @@
-package com.lucia.Freet.fragments;
+package com.lucia.Freet.ui.login;
 
 import static android.content.Context.MODE_PRIVATE;
 

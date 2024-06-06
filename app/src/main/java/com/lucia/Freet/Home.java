@@ -12,13 +12,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.lucia.Freet.forms.EventForm;
 import com.lucia.Freet.models.Event;
 import com.lucia.Freet.services.ConnectionService;
+import com.lucia.Freet.ui.form.CalendarForm;
+import com.lucia.Freet.ui.form.EventForm;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,21 +37,27 @@ public class Home extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_principal);
+        setContentView(R.layout.activity_home);
         connectionService = new ConnectionService();
 
         listaEventos = findViewById(R.id.listaEventos);
         navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            public boolean onNavigationItemSelected( MenuItem item) {
                 Intent intent = null;
                 int itemId = item.getItemId();
-                if (itemId == R.id.course) {
+                if (itemId == R.id.addEvent) {
                     intent = new Intent(getApplicationContext(), EventForm.class);
                     startActivity(intent);
                 } else if (itemId == R.id.profile) {
                     intent = new Intent(getApplicationContext(), Profile.class);
+                    startActivity(intent);
+                }else if (itemId == R.id.addCalendar) {
+                    intent = new Intent(getApplicationContext(), CalendarForm.class);
+                    startActivity(intent);
+                } else if (itemId == R.id.addCalendar) {
+                    intent = new Intent(getApplicationContext(), CalendarForm.class);
                     startActivity(intent);
                 }
                 return false;

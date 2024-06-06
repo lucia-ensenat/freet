@@ -6,8 +6,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.lucia.Freet.fragments.fragment_login_tab;
-import com.lucia.Freet.fragments.fragment_signup_tab;
+import com.lucia.Freet.ui.login.fragment_login_tab;
+import com.lucia.Freet.ui.login.fragment_signup_tab;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
     public ViewPagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {

@@ -1,4 +1,4 @@
-package com.lucia.Freet.fragments;
+package com.lucia.Freet.ui.login;
 
 
 import android.content.Intent;
@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import com.lucia.Freet.Home;
 import com.lucia.Freet.R;
-import com.lucia.Freet.SharedPreferencesUtils;
+import com.lucia.Freet.utils.SharedPreferencesUtils;
 import com.lucia.Freet.services.ConnectionService;
 
 import java.sql.Connection;

@@ -1,4 +1,4 @@
-package com.lucia.Freet.forms;
+package com.lucia.Freet.ui.form;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -12,7 +12,6 @@ import android.widget.EditText;
 import android.widget.Switch;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.lucia.Freet.Home;
 import com.lucia.Freet.Profile;
 import com.lucia.Freet.R;
@@ -48,19 +47,23 @@ public class CalendarForm extends AppCompatActivity {
         });
 
         navigationView =  findViewById(R.id.bottom_navigation);
+        navigationView.setSelectedItemId(R.id.addCalendar);
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Intent intent = null;
                 int itemId = item.getItemId();
-                if (itemId == R.id.algorithm) {
+                if (itemId == R.id.home) {
                     intent = new Intent(getApplicationContext(), Home.class);
                     startActivity(intent);
-                } else if (itemId == R.id.course) {
+                } else if (itemId == R.id.addEvent) {
                     intent = new Intent(getApplicationContext(), EventForm.class);
                     startActivity(intent);
                 } else if (itemId == R.id.profile) {
                     intent = new Intent(getApplicationContext(), Profile.class);
+                    startActivity(intent);
+                }else if (itemId == R.id.addCalendar) {
+                    intent = new Intent(getApplicationContext(), CalendarForm.class);
                     startActivity(intent);
                 }
                 return false;

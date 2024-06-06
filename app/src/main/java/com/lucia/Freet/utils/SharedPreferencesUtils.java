@@ -1,4 +1,4 @@
-package com.lucia.Freet;
+package com.lucia.Freet.utils;
 
 import static android.content.Context.MODE_PRIVATE;
 

@@ -21,11 +21,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lucia.Freet.extractor.CalendarsExtractor;
-import com.lucia.Freet.forms.EventForm;
+import com.lucia.Freet.ui.form.CalendarForm;
+import com.lucia.Freet.ui.form.EventForm;
 import com.lucia.Freet.models.AdaptadorEvento;
 import com.lucia.Freet.models.Calendar;
 import com.lucia.Freet.models.Event;
 import com.lucia.Freet.services.ConnectionService;
+import com.lucia.Freet.utils.SharedPreferencesUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -57,6 +59,8 @@ public class Profile extends AppCompatActivity {
         connectionService = new ConnectionService();
 
         navigationView = findViewById(R.id.bottom_navigation);
+        navigationView.setSelectedItemId(R.id.profile);
+
         listaEventos = findViewById(R.id.eventsListView);
         emailText = findViewById(R.id.emailText);
         nicknameText = findViewById(R.id.nicknameText);
@@ -152,11 +156,14 @@ public class Profile extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Intent intent = null;
                 int itemId = item.getItemId();
-                if (itemId == R.id.algorithm) {
+                if (itemId == R.id.home) {
                     intent = new Intent(getApplicationContext(), Home.class);
                     startActivity(intent);
-                } else if (itemId == R.id.course) {
+                } else if (itemId == R.id.addEvent) {
                     intent = new Intent(getApplicationContext(), EventForm.class);
+                    startActivity(intent);
+                }else if (itemId == R.id.addCalendar) {
+                    intent = new Intent(getApplicationContext(), CalendarForm.class);
                     startActivity(intent);
                 }
                 return false;

@@ -2,7 +2,7 @@ package com.lucia.Freet.extractor;
 
 import android.content.Context;
 
-import com.lucia.Freet.SharedPreferencesUtils;
+import com.lucia.Freet.utils.SharedPreferencesUtils;
 import com.lucia.Freet.models.Calendar;
 import com.lucia.Freet.services.ConnectionService;
 

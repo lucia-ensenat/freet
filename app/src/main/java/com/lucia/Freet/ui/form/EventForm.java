@@ -1,4 +1,4 @@
-package com.lucia.Freet.forms;
+package com.lucia.Freet.ui.form;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -24,7 +24,6 @@ import com.google.android.material.timepicker.TimeFormat;
 import com.lucia.Freet.Home;
 import com.lucia.Freet.Profile;
 import com.lucia.Freet.R;
-import com.lucia.Freet.SharedPreferencesUtils;
 import com.lucia.Freet.extractor.CalendarsExtractor;
 import com.lucia.Freet.models.Calendar;
 import com.lucia.Freet.services.ConnectionService;
@@ -33,12 +32,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class EventForm extends AppCompatActivity {
     private EditText eventName;
@@ -74,19 +69,23 @@ public class EventForm extends AppCompatActivity {
 
 
         navigationView = findViewById(R.id.bottom_navigation);
+        navigationView.setSelectedItemId(R.id.addEvent);
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Intent intent = null;
                 int itemId = item.getItemId();
-                if (itemId == R.id.algorithm) {
+                if (itemId == R.id.home) {
                     intent = new Intent(getApplicationContext(), Home.class);
                     startActivity(intent);
-                } else if (itemId == R.id.course) {
+                } else if (itemId == R.id.addEvent) {
                     intent = new Intent(getApplicationContext(), EventForm.class);
                     startActivity(intent);
                 } else if (itemId == R.id.profile) {
                     intent = new Intent(getApplicationContext(), Profile.class);
+                    startActivity(intent);
+                }else if (itemId == R.id.addCalendar) {
+                    intent = new Intent(getApplicationContext(), CalendarForm.class);
                     startActivity(intent);
                 }
                 return false;

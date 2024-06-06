@@ -2,17 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/algorithm"
-        android:icon="@drawable/circle_shape"
-        android:title="Algorithm" />
+        android:id="@+id/home"
+        android:icon="@drawable/baseline_home_24"
+        android:title="Home" />
 
     <item
-        android:id="@+id/course"
-        android:icon="@drawable/circle_shape"
-        android:title="Course" />
+        android:id="@+id/addEvent"
+        android:icon="@drawable/baseline_add_circle_24"
+        android:title="Event" />
+    <item
+        android:id="@+id/addCalendar"
+        android:icon="@drawable/baseline_add_circle_24"
+        android:title="Calendar" />
 
     <item
         android:id="@+id/profile"
-        android:icon="@drawable/circle_shape"
+        android:icon="@drawable/baseline_person_24"
         android:title="Profile" />
 </menu>
