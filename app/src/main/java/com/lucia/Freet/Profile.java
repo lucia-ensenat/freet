@@ -53,7 +53,6 @@ public class Profile extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("Has cambiado a claendario");
         setContentView(R.layout.activity_profile);
 
         connectionService = new ConnectionService();
@@ -116,7 +115,6 @@ public class Profile extends AppCompatActivity {
         calendarEventsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Has hecho click");
 
                 CalendarsExtractor calendarsExtractor = new CalendarsExtractor();
                 List<Calendar> calendars = calendarsExtractor.extractUserCalendars(Profile.this);
