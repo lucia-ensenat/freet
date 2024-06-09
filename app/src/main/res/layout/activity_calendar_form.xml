@@ -8,8 +8,8 @@
 
     <EditText
         android:id="@+id/nameEditText"
-        android:layout_width="412dp"
-        android:layout_height="68dp"
+        android:layout_width="395dp"
+        android:layout_height="74dp"
         android:layout_marginTop="16dp"
         android:hint="Nombre del Calendario"
         android:inputType="text"
@@ -20,8 +20,8 @@
 
     <Switch
         android:id="@+id/switchShare"
-        android:layout_width="393dp"
-        android:layout_height="84dp"
+        android:layout_width="416dp"
+        android:layout_height="63dp"
         android:layout_marginTop="16dp"
         android:text="¿Compartir calendario?"
         app:layout_constraintBottom_toTopOf="@+id/button"
@@ -31,14 +31,25 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="GUARDAR"
-        app:layout_constraintTop_toBottomOf="@+id/switchShare"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/buttonCalenario"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchShare" />
+
+    <Button
+        android:id="@+id/buttonCalenario"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="UNIRTE A UN CALENDARIO"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
@@ -49,8 +60,8 @@
         app:itemIconTint="@android:color/white"
         app:itemTextColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/navigation_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
