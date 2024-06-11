@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +29,7 @@ import com.lucia.Freet.Profile;
 import com.lucia.Freet.R;
 import com.lucia.Freet.extractor.CalendarsExtractor;
 import com.lucia.Freet.models.Calendar;
+import com.lucia.Freet.models.Intervalo;
 import com.lucia.Freet.services.ConnectionService;
 
 import java.sql.Connection;
@@ -41,8 +43,9 @@ import java.util.List;
 public class EventForm extends AppCompatActivity {
     private EditText eventName;
     private EditText eventPlace;
-    private Spinner calendars;
+    private static Spinner calendars;
     private TextView eventDate;
+    private TextView recomendadoText;
     private CalendarsExtractor calendarExtractor;
     private BottomNavigationView navigationView;
     private ConnectionService connectionService;
@@ -65,10 +68,12 @@ public class EventForm extends AppCompatActivity {
         eventPlace = findViewById(R.id.placeText);
         eventDate = findViewById(R.id.dateText);
         calendars = findViewById(R.id.spinner);
+        recomendadoText = findViewById(R.id.recomendadoText);
 
-        Button buttonDate = findViewById(R.id.buttonDate);
-        Button buttonTime = findViewById(R.id.buttonTime);
-        Button buttonSave = findViewById(R.id.buttonSave);
+        final Button buttonDate = findViewById(R.id.buttonDate);
+        final Button buttonTime = findViewById(R.id.buttonTime);
+        final Button buttonSave = findViewById(R.id.buttonSave);
+        final Button RecomandedButton = findViewById(R.id.buttonRecomendarFecha);
 
 
         navigationView = findViewById(R.id.bottom_navigation);
@@ -140,7 +145,13 @@ public class EventForm extends AppCompatActivity {
             });
 
         });
-
+        RecomandedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SearchDateTask searchDateTask = new SearchDateTask((Calendar) EventForm.calendars.getSelectedItem());
+                searchDateTask.execute();
+            }
+        });
 
         buttonSave.setOnClickListener(v -> {
             final java.util.Calendar startTimeStamp;
@@ -270,6 +281,79 @@ public class EventForm extends AppCompatActivity {
                 toast = Toast.makeText(EventForm.this, "No se ha podido crear", Toast.LENGTH_SHORT);
             }
             toast.show();
+        }
+    }
+
+    private class SearchDateTask extends AsyncTask<String, Void, Boolean> {
+        private Calendar selectedCalendar;
+        List<Intervalo> intervalos = new ArrayList<>();
+
+        public SearchDateTask(Calendar selectedCalendar) {
+            this.selectedCalendar = selectedCalendar;
+        }
+
+        private void encontrarHueco() {
+
+
+            java.util.Calendar fechaActual = java.util.Calendar.getInstance();
+            fechaActual.set(java.util.Calendar.DATE, fechaActual.get(java.util.Calendar.DAY_OF_MONTH) + 1);
+
+            java.util.Calendar fechaLibre = null;
+
+            // Itera a través de los días posteriores al día actual
+            while (fechaLibre == null) {
+                boolean libre = false;
+                for (Intervalo horario : intervalos) {
+                    if (horario.getInicio().equals(fechaActual) || horario.getInicio().equals(fechaActual)) {
+                        libre = false;
+                    } else {
+                        libre = true;
+                        fechaLibre = fechaActual;
+                        break;
+                    }
+                }
+
+                if (libre) {
+                    recomendadoText.setText(fechaLibre.getTime().toString());
+                } else {
+
+                    fechaActual.set(java.util.Calendar.DATE, fechaActual.get(java.util.Calendar.DAY_OF_MONTH) + 1);
+                }
+            }
+
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+
+            try (final Connection connection = connectionService.createConnection()) {
+                try (final PreparedStatement statement = connection.prepareStatement("SELECT fecha, fechaFin FROM `evento` WHERE idCalendario IN ( SELECT idCalendario FROM `tiene` WHERE nickname IN ( SELECT nickname FROM `tiene` WHERE idCalendario = ? ) )")) {
+                    System.out.println(selectedCalendar.getUUID());
+                    statement.setString(1, selectedCalendar.getUUID());
+
+                    try (ResultSet rs = statement.executeQuery()) {
+                        while (rs.next()) {
+                            intervalos.add(new Intervalo(rs.getDate("fecha"), rs.getDate("fechaFin")));
+                        }
+                    }
+
+                    return true;
+
+
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                encontrarHueco();
+            }
+
         }
     }
 

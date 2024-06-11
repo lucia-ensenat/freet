@@ -194,9 +194,8 @@ public class Home extends AppCompatActivity {
         protected void onPostExecute(Boolean success) {
             if (success) {
                 final AdaptadorEvento adapter = new AdaptadorEvento(getApplicationContext(), (ArrayList<Event>) events);
-
                 listaEventos.setAdapter(adapter);
-                System.out.println("listo");
+
             } else {
                 System.out.println("No se encontraron eventos.");
             }
@@ -216,11 +215,15 @@ public class Home extends AppCompatActivity {
         protected Boolean doInBackground(String... params) {
 
             try (final Connection connection = connectionService.createConnection(); //
-                 final PreparedStatement statement = connection.prepareStatement("DELETE FROM `evento` WHERE `idEvento` = ?")) {
-                statement.setInt(1, event.getId());
+                 final PreparedStatement statement1 = connection.prepareStatement("DELETE FROM `asiste` WHERE `idEvento` = ?");//) {
+                 final PreparedStatement statement2 = connection.prepareStatement("DELETE FROM `evento` WHERE `idEvento` = ?")) {
+                statement1.setInt(1, event.getId());
+                statement2.setInt(1, event.getId());
 
-                if (statement.executeUpdate() != 0) {
-                    return true;
+                if (statement1.executeUpdate() != 0) {
+                    if (statement2.executeUpdate() != 0) {
+                        return true;
+                    }
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -235,9 +238,7 @@ public class Home extends AppCompatActivity {
                 Toast.makeText(Home.this, "Se ha eliminado", Toast.LENGTH_SHORT).show();
                 events.remove(position);
                 final AdaptadorEvento adapter = new AdaptadorEvento(getApplicationContext(), (ArrayList<Event>) events);
-
                 listaEventos.setAdapter(adapter);
-                System.out.println("listo");
             } else {
                 Toast.makeText(Home.this, "No se ha eliminado", Toast.LENGTH_SHORT).show();
                 System.out.println("No se ha eliminado.");

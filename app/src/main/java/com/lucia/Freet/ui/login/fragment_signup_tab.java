@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -90,34 +91,58 @@ public class fragment_signup_tab extends Fragment {
             }
         });
 
+
+        signUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InserarTask insertarTask = new InsertarTask();
+                insertarTask.execute();
+            }
+        });
+
         return view;
     }
 
-    public void iniciarSesion(View view) {
-        try (Connection connection = connectionService.createConnection()) {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO `usuarios`(`nickname`, `email`, `password`) VALUES ('?','?','?'); ");
-            statement.setString(2, emailEditText.getText().toString());
-            statement.setString(1, nicknameEditText.getText().toString());
-            statement.setString(3, passwordEditText.getText().toString());
-            int raw = statement.executeUpdate();
-            if (raw == 1) {
+    public class InsertarTask extends AsyncTask<String, Void, Boolean> {
 
-                SharedPreferences sharedPrefernces = getContext().getSharedPreferences("Prefs", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPrefernces.edit();
 
-                editor.putBoolean("isLogged", isLogged.isChecked());
-                editor.putString("email", emailEditText.getText().toString());
-                editor.putString("nickname", nicknameEditText.getText().toString());
-                editor.commit();
-                Intent intent = new Intent(getContext(), Home.class);
-                startActivity(intent);
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            try (Connection connection = connectionService.createConnection()) {
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO `usuarios`(`nickname`, `email`, `password`) VALUES ('?','?','?'); ");
+                statement.setString(2, emailEditText.getText().toString());
+                statement.setString(1, nicknameEditText.getText().toString());
+                statement.setString(3, passwordEditText.getText().toString());
+                int raw = statement.executeUpdate();
+                if (raw == 1) {
+
+                    SharedPreferences sharedPrefernces = getContext().getSharedPreferences("Prefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPrefernces.edit();
+
+                    editor.putBoolean("isLogged", isLogged.isChecked());
+                    editor.putString("email", emailEditText.getText().toString());
+                    editor.putString("nickname", nicknameEditText.getText().toString());
+                    editor.commit();
+
+                }
+                if (raw == 0) {
+                    Toast.makeText(getContext(), "Ese nickname no está disponible, intenta con otro", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            } catch (SQLException e) {
+                return false;
             }
-            if (raw == 0) {
-                Toast.makeText(getContext(), "Ese nickname no está disponible, intenta con otro", Toast.LENGTH_SHORT).show();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            return  true;
         }
 
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if(success){
+                Intent intent = new Intent(getContext(), Home.class);
+                startActivity(intent);
+            }else{
+
+            }
+        }
     }
 }

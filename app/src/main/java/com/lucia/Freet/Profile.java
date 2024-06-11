@@ -21,12 +21,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lucia.Freet.extractor.CalendarsExtractor;
-import com.lucia.Freet.ui.form.CalendarForm;
-import com.lucia.Freet.ui.form.EventForm;
 import com.lucia.Freet.models.AdaptadorEvento;
 import com.lucia.Freet.models.Calendar;
 import com.lucia.Freet.models.Event;
 import com.lucia.Freet.services.ConnectionService;
+import com.lucia.Freet.ui.form.CalendarForm;
+import com.lucia.Freet.ui.form.EventForm;
 import com.lucia.Freet.utils.SharedPreferencesUtils;
 
 import java.sql.Connection;
@@ -43,6 +43,7 @@ public class Profile extends AppCompatActivity {
     private TextView nicknameText;
     private Button passwordButton;
     private ConnectionService connectionService;
+    private CalendarsExtractor calendarsExtractor;
     private Button historicEventsButton;
     private Button calendarEventsButton;
     private ListView listaEventos;
@@ -56,6 +57,7 @@ public class Profile extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         connectionService = new ConnectionService();
+        calendarsExtractor = new CalendarsExtractor();
 
         navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setSelectedItemId(R.id.profile);
@@ -66,6 +68,7 @@ public class Profile extends AppCompatActivity {
         passwordButton = findViewById(R.id.passwordButton);
         historicEventsButton = findViewById(R.id.buttonHistoric);
         calendarEventsButton = findViewById(R.id.buttonCalendar);
+        List<Calendar> calendars = new ArrayList<>();
 
 
         email = SharedPreferencesUtils.get("email", getApplicationContext());
@@ -108,6 +111,8 @@ public class Profile extends AppCompatActivity {
         historicEventsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ExtractAllEvents extractAllEvents = new ExtractAllEvents();
+                extractAllEvents.execute();
 
             }
         });
@@ -116,35 +121,8 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                CalendarsExtractor calendarsExtractor = new CalendarsExtractor();
-                List<Calendar> calendars = calendarsExtractor.extractUserCalendars(Profile.this);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(Profile.this);
-                builder.setTitle("Elige un calendario");
-                final Spinner spinner = new Spinner(Profile.this);
-                final ArrayAdapter<Calendar> adapter = new ArrayAdapter<>(Profile.this,
-                        android.R.layout.simple_spinner_item, calendars);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinner.setAdapter(adapter);
-                builder.setView(spinner);
-
-                builder.setPositiveButton("Mostrar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ExtractCalendarEvents extractCalendarEvents = new ExtractCalendarEvents((Calendar) spinner.getSelectedItem());
-
-                        extractCalendarEvents.execute();
-                    }
-                });
-
-                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                builder.show();
+                ObtainCalendarTask obtainCalendarTask = new ObtainCalendarTask(calendars);
+                obtainCalendarTask.execute();
 
 
             }
@@ -160,7 +138,7 @@ public class Profile extends AppCompatActivity {
                 } else if (itemId == R.id.addEvent) {
                     intent = new Intent(getApplicationContext(), EventForm.class);
                     startActivity(intent);
-                }else if (itemId == R.id.addCalendar) {
+                } else if (itemId == R.id.addCalendar) {
                     intent = new Intent(getApplicationContext(), CalendarForm.class);
                     startActivity(intent);
                 }
@@ -219,10 +197,9 @@ public class Profile extends AppCompatActivity {
         protected Boolean doInBackground(String... params) {
 
             try (final Connection connection = connectionService.createConnection()) {
-                try (final PreparedStatement statement = connection.prepareStatement("SELCT * from evento where calendario = ?")) {
+                try (final PreparedStatement statement = connection.prepareStatement("SELECT * from evento where calendario = ?")) {
                     statement.setString(1, uuid);
                     try (ResultSet rs = statement.executeQuery()) {
-                        System.out.println("ejecutado query calenadr");
                         while (rs.next()) {
                             final Event event = new Event(rs.getString("evento"), rs.getString("lugar"), rs.getTimestamp("fecha"),
                                     rs.getTimestamp("fechaFin"));
@@ -251,6 +228,98 @@ public class Profile extends AppCompatActivity {
                 Toast toast = Toast.makeText(Profile.this, "No hay ningun evento", Toast.LENGTH_SHORT);
                 toast.show();
             }
+        }
+    }
+
+    private class ExtractAllEvents extends AsyncTask<String, Void, Boolean> {
+
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            try (final Connection connection = connectionService.createConnection()) {
+                try (final PreparedStatement statement = connection.prepareStatement("SELECT * from evento where idEvento IN (SELECT idEvento FROM asiste WHERE nickname = ? )")) {
+                    statement.setString(1, SharedPreferencesUtils.get(nickname, Profile.this));
+                    try (ResultSet rs = statement.executeQuery()) {
+                        while (rs.next()) {
+                            final Event event = new Event(rs.getString("evento"), rs.getString("lugar"), rs.getTimestamp("fecha"),
+                                    rs.getTimestamp("fechaFin"));
+
+                            events.add(event);
+
+                        }
+                        return true;
+                    }
+
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                final AdaptadorEvento adapter = new AdaptadorEvento(getApplicationContext(), (ArrayList<Event>) events);
+
+                listaEventos.setAdapter(adapter);
+
+            } else {
+                Toast toast = Toast.makeText(Profile.this, "No hay ningun evento", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+    }
+
+    private class ObtainCalendarTask extends AsyncTask<String, Void, Boolean> {
+        private List<Calendar> calendars;
+
+
+        public ObtainCalendarTask(List<Calendar> calendars) {
+
+            this.calendars = calendars;
+
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            calendars.addAll(calendarsExtractor.extractUserCalendars(getApplicationContext()));
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(Profile.this);
+            builder.setTitle("Elige un calendario");
+
+            final ArrayAdapter<Calendar> adapter = new ArrayAdapter<>(Profile.this,
+                    android.R.layout.simple_spinner_item, calendars);
+            final Spinner spinner = new Spinner(Profile.this);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(adapter);
+            builder.setView(spinner);
+
+            builder.setPositiveButton("Mostrar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ExtractCalendarEvents extractCalendarEvents = new ExtractCalendarEvents((Calendar) spinner.getSelectedItem());
+                    extractCalendarEvents.execute();
+                }
+            });
+
+            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            builder.show();
+
+
         }
     }
 }
